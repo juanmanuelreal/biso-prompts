@@ -1,0 +1,1360 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Concept-First Prompt Library</title>
+<meta name="description" content="Seven prompts in the order BISO uses them, the ICM starter kit and a second-brain vault. From Juan Manuel Real's talk Concept first.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,400;1,500&family=Hanken+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ink:#0A0D0B; --panel:#121815; --line:rgba(233,237,234,.13);
+  --text:#E9EDEA; --soft:#A3ADA7; --faint:#7E878B;
+  --green:#4FA974; --chrome:#C4CACE;
+  --sans:"Hanken Grotesk","Helvetica Neue",Arial,sans-serif;
+  --serif:"Cormorant Garamond",Georgia,"Times New Roman",serif;
+  --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html{background:var(--ink)}
+body{margin:0;background:var(--ink);color:var(--text);font-family:var(--sans);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
+.wrap{max-width:760px;margin:0 auto;padding-inline:20px;padding-block:18px 72px}
+a{color:var(--text);text-decoration-color:var(--green);text-underline-offset:3px}
+a:hover{color:var(--green)}
+:focus-visible{outline:2px solid var(--green);outline-offset:3px;border-radius:4px}
+.top{display:flex;align-items:center;gap:12px;padding-block:6px 20px}
+.top img{width:34px;height:34px;display:block}
+.label,.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--soft);margin:0}
+.eyebrow{color:var(--green)}
+.hero figure{margin:0;border-radius:6px;overflow:hidden;aspect-ratio:16/9;background:var(--panel);max-width:100%}
+.hero figure img{display:block;width:100%;height:100%;object-fit:cover}
+.hero .eyebrow{margin:28px 0 10px}
+h1{font-size:clamp(52px,13vw,104px);line-height:.95;letter-spacing:-.035em;font-weight:600;margin:0}
+.lede{font-size:clamp(19px,2.6vw,22px);line-height:1.45;color:var(--soft);margin:18px 0 0;max-width:36ch}
+.lede strong{color:var(--text);font-weight:500}
+section{margin-top:68px}
+h2{font-size:clamp(26px,5vw,34px);line-height:1.15;letter-spacing:-.015em;font-weight:600;margin:8px 0 20px;text-wrap:balance}
+.words{margin:0;border-top:1px solid var(--line)}
+.word{display:grid;grid-template-columns:minmax(0,170px) minmax(0,1fr);gap:6px 24px;padding-block:18px;border-bottom:1px solid var(--line)}
+.word dt{font-family:var(--serif);font-style:italic;font-size:36px;line-height:1.05}
+.word dd{margin:0;color:var(--soft)}
+.word dd b{color:var(--text);font-weight:500}
+@media (max-width:560px){.word{grid-template-columns:1fr}}
+.stages{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.stages li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:2px 12px;padding-block:14px;border-bottom:1px solid var(--line);align-items:baseline}
+.stages .n{font-family:var(--mono);font-size:13px;color:var(--faint)}
+.stages .name{font-weight:600}
+.stages .h{font-family:var(--mono);font-size:12px;color:var(--soft);white-space:nowrap}
+.stages .d{grid-column:2 / 4;color:var(--soft);font-size:15.5px}
+.stages li.gen .n,.stages li.gen .name{color:var(--green)}
+.note{margin:16px 0 0;color:var(--soft)}
+.note b{color:var(--text);font-weight:500}
+.group{margin-top:36px}
+.group>.label{display:block;margin-bottom:4px}
+.prompt{border-top:1px solid var(--line);padding-block:22px 8px}
+.prompt header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.prompt h3{font-size:21px;line-height:1.25;margin:0;font-weight:600;text-wrap:balance}
+.prompt h3 span{font-family:var(--mono);font-size:13px;color:var(--green);font-weight:500;margin-right:10px}
+.when{margin:6px 0 12px;color:var(--soft);font-size:15.5px}
+pre{margin:0;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px 18px;font-family:var(--mono);font-size:13.5px;line-height:1.6;color:var(--text);white-space:pre-wrap;overflow-wrap:anywhere;max-width:100%}
+.why{margin:12px 0 0;font-size:15.5px;color:var(--soft)}
+.why b{color:var(--text);font-weight:500}
+button.copy{flex:none;font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--text);background:transparent;border:1px solid var(--line);border-radius:999px;padding:7px 14px;cursor:pointer}
+button.copy:hover,button.copy[data-state="done"]{border-color:var(--green);color:var(--green)}
+.filters{list-style:none;margin:0;padding:0;counter-reset:f;border-top:1px solid var(--line)}
+.filters li{padding:14px 0 14px 40px;border-bottom:1px solid var(--line);position:relative}
+.filters li::before{counter-increment:f;content:counter(f,decimal-leading-zero);position:absolute;left:0;top:16px;font-family:var(--mono);font-size:13px;color:var(--faint)}
+.kit{padding-top:28px;border-top:1px solid var(--chrome)}
+.kit p{max-width:54ch}
+.handle{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:16px}
+.handle code{font-family:var(--mono);font-size:18px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 12px}
+.links{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:22px;font-size:15.5px;color:var(--soft)}
+footer{margin-top:68px;padding-top:20px;border-top:1px solid var(--line);color:var(--soft);font-size:14px}
+footer p{margin:0 0 10px;max-width:64ch}
+footer b{color:var(--text);font-weight:500}
+.kit details{margin-top:8px}.kit summary{cursor:pointer;color:var(--soft);font-size:15px}.kit summary:hover{color:var(--text)}.kit pre{margin-top:12px}code{font-family:var(--mono);font-size:15px;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:2px 6px}
+</style>
+<style>[hidden]{display:none!important}img{max-width:100%}</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <img src="logo-b.png" alt="BISO" width="34" height="34">
+    <p class="label">BISO · Human-directed. AI-produced.</p>
+  </header>
+
+  <div class="hero">
+    <figure><img src="cover.jpg" alt="A woman in a cream turtleneck stands in an empty concrete room lit by one window. The cover frame of BISO Editorial No.1."></figure>
+    <p class="eyebrow">From the talk by Juan Manuel Real</p>
+    <h1>Concept first.</h1>
+    <p class="lede">Seven prompts, in the order we use them at BISO. <strong>Three of them come before any image.</strong> The prompt is the last step, not the first.</p>
+  </div>
+
+  <section id="steps" aria-labelledby="steps-h">
+    <p class="eyebrow">From a lab to a studio</p>
+    <h2 id="steps-h">Four steps</h2>
+    <ol class="stages">
+      <li><span class="n">01</span><span class="name">Show up</span><span class="h"></span><span class="d">Publish what you are learning, while you learn it. Your feed is your first portfolio.</span></li>
+      <li><span class="n">02</span><span class="name">Concept first</span><span class="h"></span><span class="d">Intention, direction, criteria. The prompt is the last step.</span></li>
+      <li><span class="n">03</span><span class="name">Get real work</span><span class="h"></span><span class="d">Nobody hires you for your lab. Start with the brands around you. Set a floor, half upfront, always a written agreement.</span></li>
+      <li><span class="n">04</span><span class="name">Build systems</span><span class="h"></span><span class="d">Map your process. Give the AI context: ICM folders, a second brain, agents in a chain.</span></li>
+    </ol>
+  </section>
+
+  <section id="words" aria-labelledby="words-h">
+    <p class="eyebrow">The method</p>
+    <h2 id="words-h">Three words</h2>
+    <dl class="words">
+      <div class="word"><dt>Intention</dt><dd><b>What should this make someone feel, or do?</b> One feeling. If your concept needs a second sentence, it isn't ready.</dd></div>
+      <div class="word"><dt>Direction</dt><dd><b>Turn that feeling into decisions a machine can follow.</b> Every prompt is a list of decisions. The brief changes the what. The system fixes the how.</dd></div>
+      <div class="word"><dt>Criteria</dt><dd><b>The standards you use to decide what deserves to exist, written down.</b> AI multiplies options. It picks none. Choosing is the job.</dd></div>
+    </dl>
+  </section>
+
+  <section id="stages" aria-labelledby="stages-h">
+    <p class="eyebrow">How a campaign moves at BISO</p>
+    <h2 id="stages-h">Where the prompts live</h2>
+    <ol class="stages">
+      <li><span class="n">01</span><span class="name">Research</span><span class="h">2–4 h</span><span class="d">The gap nobody in the category is using, and what the work must not look like.</span></li>
+      <li><span class="n">02</span><span class="name">Strategy</span><span class="h">1–2 h</span><span class="d">A one-sentence concept, one emotion, one objective, one anti-objective.</span></li>
+      <li><span class="n">03</span><span class="name">Direction</span><span class="h">2–3 h</span><span class="d">The world, the shot list, and only then the prompts.</span></li>
+      <li class="gen"><span class="n">04</span><span class="name">Production</span><span class="h">3–6 h</span><span class="d">Four variations per shot. If none passes, fix the prompt. Never re-roll a broken one.</span></li>
+      <li><span class="n">05</span><span class="name">Delivery</span><span class="h">1–2 h</span><span class="d">The edit, the checks, and one paragraph so the client understands what they bought.</span></li>
+    </ol>
+    <p class="note"><b>More than half of the hours happen before anything is generated.</b> The AI tools live in stage four.</p>
+  </section>
+
+  <section id="library" aria-labelledby="library-h">
+    <p class="eyebrow">The library</p>
+    <h2 id="library-h">Seven prompts, in order</h2>
+
+    <div class="group">
+      <span class="label">Before any image</span>
+
+      <article class="prompt" id="p1">
+        <header><h3><span>01</span>Opportunity scan</h3><button class="copy" type="button" data-target="t1" aria-label="Copy the opportunity scan prompt">Copy</button></header>
+        <p class="when">Any chat model. The moment a brief arrives.</p>
+<pre id="t1">Act as a senior creative strategist.
+
+Brand: [brand]
+Industry: [industry]
+Campaign goal: [goal]
+Brands they admire: [2–3 brands]
+It must NOT look like: [anti-references]
+
+Give me:
+1. What they already do well.
+2. What is missing.
+3. The creative opportunity nobody in their category is using, in one paragraph.
+4. Three to five references, one or two from outside the category, each with why.
+5. One question that forces the client to choose a direction.</pre>
+        <p class="why"><b>Why it works:</b> it starts from the gap, not the look. And anti-references are more precise than references.</p>
+      </article>
+
+      <article class="prompt" id="p2">
+        <header><h3><span>02</span>The one-sentence concept</h3><button class="copy" type="button" data-target="t2" aria-label="Copy the one-sentence concept prompt">Copy</button></header>
+        <p class="when">Any chat model. Before you open an image tool.</p>
+<pre id="t2">Based on this research: [paste it here]
+
+Write the campaign strategy for [brand] on one page.
+
+CONCEPT: one idea that runs through everything. One sentence, maximum.
+AUDIENCE: desires, fears and contradictions. Not demographics.
+EMOTION: one, and specific. Not "inspired". Something like "nostalgia for a life you never lived".
+FORMATS: each piece, platform and ratio, and why it exists.
+OBJECTIVE: the action we want people to take.
+ANTI-OBJECTIVE: what must not happen.
+
+If the concept needs a second sentence, it isn't strong enough. Tell me what is missing instead of padding it.</pre>
+        <p class="why"><b>Why it works:</b> every later prompt inherits from this page, and the length limits work as built-in stress tests.</p>
+      </article>
+
+      <article class="prompt" id="p3">
+        <header><h3><span>03</span>World and shot list</h3><button class="copy" type="button" data-target="t3" aria-label="Copy the world and shot list prompt">Copy</button></header>
+        <p class="when">Any chat model. Once the concept is approved.</p>
+<pre id="t3">Concept: [concept]
+Emotion: [emotion]
+Brand values: [2–3 values]
+Length and ratio: [for example 20 s, 9:16]
+
+WORLD
+- The subject, alone in the frame.
+- One dominant palette, taken from the client's real world.
+- One accent color that breaks it, and what it means.
+- One light source that really exists in that space.
+- Each brand value turned into one visual decision.
+
+SHOTS (2–4 s each, never two action shots in a row)
+A wide, quiet opening. A texture macro. The subject, unposed. The one movement. Stillness and the title.
+For each shot: what we see, its job in the concept, the lens, the single movement and where it ends.
+
+Only WHAT changes between shots. HOW stays fixed.
+Cut any shot the film can live without.</pre>
+        <p class="why"><b>Why it works:</b> consistency comes from a fixed grammar, not from copying a prompt. Same vibe, different scenes.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <span class="label">Images</span>
+
+      <article class="prompt" id="p4">
+        <header><h3><span>04</span>The eight-field image prompt</h3><button class="copy" type="button" data-target="t4" aria-label="Copy the eight-field image prompt">Copy</button></header>
+        <p class="when">Any image model. One prompt per shot.</p>
+<pre id="t4">{
+  "camera": "[shot and movement, e.g. static medium shot, eye level]",
+  "lens": "[focal length and aperture, e.g. 85mm, f/1.8]",
+  "light": "[source, quality, time of day, e.g. soft side light from a tall window, late afternoon]",
+  "environment": "[space, materials, atmosphere]",
+  "subject": "[precise description and action, no proper names]",
+  "emotion": "[the one emotion from your concept]",
+  "texture": "visible film grain, analog warmth, slightly underexposed",
+  "style": "cinematic editorial, not commercial, imperfect"
+}</pre>
+        <p class="why"><b>Why it works:</b> each field is a decision a cinematographer makes on set. Leave one empty and the model fills it with the average. Our rule: always English, always JSON, always all eight fields.</p>
+      </article>
+
+      <article class="prompt" id="p5">
+        <header><h3><span>05</span>Surgical edit</h3><button class="copy" type="button" data-target="t5" aria-label="Copy the surgical edit prompt">Copy</button></header>
+        <p class="when">Image editing. An approved shot with one flaw.</p>
+<pre id="t5">[Replace / Fix] [the element and where it is] with [the replacement, described from the real reference photo].
+Keep everything else identical: framing, characters, wardrobe, lighting and colors.</pre>
+        <p class="why"><b>Why it works:</b> it protects what the client already approved. Real client work is mostly editing, not generating.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <span class="label">Motion</span>
+
+      <article class="prompt" id="p6">
+        <header><h3><span>06</span>The motion block</h3><button class="copy" type="button" data-target="t6" aria-label="Copy the motion block prompt">Copy</button></header>
+        <p class="when">Image to video, with Kling or Seedance.</p>
+<pre id="t6">{
+  "motion_description": "[one physically plausible movement]",
+  "static_elements": "[what must not move]",
+  "motion_endpoint": "[exactly how and where the movement ends]",
+  "camera_movement": "[one: static, slow push in, or drift]",
+  "duration": "5s",
+  "audio": "none, sound is built in the edit"
+}
+PRESERVE face identity. EXACT physical SIZE consistent. NO background music.</pre>
+        <p class="why"><b>Why it works:</b> the model already has the frame, so you only describe the motion. In our experience, clips without an endpoint are the ones that stall.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <span class="label">Choosing</span>
+
+      <article class="prompt" id="p7">
+        <header><h3><span>07</span>The last filter</h3><button class="copy" type="button" data-target="t7" aria-label="Copy the last filter prompt">Copy</button></header>
+        <p class="when">A chat model that can see images. Before the client sees anything.</p>
+<pre id="t7">You are the last filter before the client.
+Concept: [concept]
+Intended emotion: [emotion]
+Real references: [attached]
+
+For each image: PASS or DISCARD, with one line of evidence.
+1. Photographed or generated? A stock, render or filter look means discard.
+2. Is there visible grain or imperfection?
+3. Which emotion do you read in two seconds? Does it match?
+4. Is the composition deliberately imperfect?
+5. Artifacts: hands, eyes, repeated backgrounds, objects passing through bodies, stray text.
+6. Does anything contradict the real references: space, product size, equipment, wardrobe?
+7. Could this belong to any other brand?
+
+If nothing passes, do not suggest more variations. Name the prompt field that failed and rewrite only that field.
+When in doubt: fix. Never ship.</pre>
+        <p class="why"><b>Why it works:</b> it turns taste into a checkpoint, and it breaks the habit of re-rolling until something looks good.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="filters" aria-labelledby="filters-h">
+    <p class="eyebrow">Criteria, written down</p>
+    <h2 id="filters-h">Before anything ships</h2>
+    <ol class="filters">
+      <li>It feels photographed, not generated.</li>
+      <li>It has grain, texture, life.</li>
+      <li>You can read the emotion in two seconds.</li>
+      <li>The composition is a little imperfect, on purpose.</li>
+      <li>It could not belong to any other brand.</li>
+    </ol>
+    <p class="note"><b>When in doubt: fix. Never ship.</b></p>
+  </section>
+
+  <section class="kit" id="icm" aria-labelledby="icm-h">
+    <p class="eyebrow">The full studio kit</p>
+    <h2 id="icm-h">The ICM starter kit</h2>
+    <p>Our studio runs on a folder system for Claude Code: a router, one contract per stage, shared references and a memory of what worked. It is the reason our sessions load half the context they used to. Two ways to get it, both free.</p>
+
+    <div class="group">
+      <span class="label">Way one, copy and paste</span>
+      <article class="prompt" id="p8">
+        <header><h3><span>08</span>The ICM installer</h3><button class="copy" type="button" data-target="t8" aria-label="Copy the ICM installer prompt">Copy</button></header>
+        <p class="when">Claude Code, or any agent that can create files. Open it in an empty folder, paste this, press Enter. It writes the twenty files, then interviews you to fill in your identity, voice and pricing.</p>
+        <details><summary>Show the full prompt (it carries all twenty files, about 33,000 characters)</summary>
+<pre id="t8">You are setting up ICM (Intelligent Context Management), a folder system that tells an AI agent what to load and when. Create every file listed below inside the current folder, with exactly the content between its FILE and END FILE markers (create the folders you need; also create an empty file at memory/clients/.gitkeep). Do not summarize, shorten or skip any file. When all files exist, read CLAUDE.md and CONTEXT.md, then interview me one question at a time to fill in shared/references/identity.md, voice.md and pricing.md. When those three are complete, run the `brief` trigger described in CLAUDE.md.
+
+=== FILE: START-HERE.md ===
+# START HERE. Install from zero
+
+&gt; For people who know nothing technical. Follow the steps in order. Total time: about 20 minutes.
+
+## What you get at the end
+An assistant (Claude) that knows your business, keeps your clients and projects in order, helps you write proposals and quotes, and walks each project through five stages. All from one folder on your computer.
+
+## Before you start: the only thing you pay for
+Claude Code needs a paid Claude account (Pro or Max). The free plan does not work with this.
+1. Go to claude.com and create your account.
+2. Subscribe to Pro. It is enough to start.
+3. Keep your login handy. You will use it in step 2.
+
+## Two ways to use this. Pick one.
+- **Desktop app (recommended):** windows and mouse, no terminal. Go to PATH A.
+- **Terminal:** more commands, more control. Go to PATH B.
+
+---
+
+# PATH A. The desktop app
+
+### A.1 Download the app
+Go to claude.com/download and install the Claude app like any other program.
+
+### A.2 Sign in
+Open the app and sign in with your paid account.
+
+### A.3 Open the folder
+In the app, choose &quot;open folder&quot; and select the `icm-kit` folder (or whatever you renamed it to).
+
+### A.4 Test it
+Type `brief` in the chat. If it answers with a status and priorities, it works. Jump to STEP 5.
+
+---
+
+# PATH B. The terminal
+
+## STEP 1. Install Claude Code (10 min)
+1. Press `Cmd + Space`, type **Terminal**, press Enter. A window with text opens. That is the terminal. You will only paste things into it.
+2. Copy this line, paste it in the terminal and press Enter:
+```
+curl -fsSL https://claude.ai/install.sh | bash
+```
+Wait for it to finish. It may take a couple of minutes and print a lot of text. That is normal.
+3. Close the terminal, open it again, paste this and press Enter:
+```
+claude --version
+```
+If you see a number, it is installed.
+
+## STEP 2. Sign in (2 min)
+In the terminal type `claude`. The first time it asks you to sign in. The browser opens, sign in with your paid account, come back to the terminal.
+
+## STEP 3. Put the folder in its place (2 min)
+1. The folder is called `icm-kit`. Rename it to your business name if you like (for example `my-studio`).
+2. Move it somewhere easy to find, like your Desktop.
+3. In the terminal, &quot;enter&quot; that folder:
+```
+cd ~/Desktop/my-studio
+```
+Tip: type `cd ` (with the space), then drag the folder from Finder into the terminal and press Enter. The path fills itself in.
+
+## STEP 4. Open your assistant (1 min)
+Inside the folder, type:
+```
+claude
+```
+Claude starts and reads your business setup on its own. Test it:
+```
+brief
+```
+It gives you a status and priorities. If it answers, everything works.
+
+## STEP 5. Fill in your information (15 min, once)
+Three files define your business. Ask Claude to help you fill them. Type:
+```
+Help me complete shared/references/identity.md with my business info. Ask me the questions one at a time.
+```
+Repeat for the other two:
+- `shared/references/voice.md` (how you communicate)
+- `shared/references/pricing.md` (your services and prices)
+
+You do not write the files yourself. Claude asks the questions and fills them for you.
+
+## How to work from now on
+1. Open the terminal (or the app).
+2. Enter your folder: `cd ~/Desktop/my-studio`.
+3. Type `claude`.
+4. Ask for what you need, in plain language.
+
+| Type this | And it does |
+|---|---|
+| `brief` | Status of the day plus priorities |
+| `review` | Weekly recap |
+| `/new-client name` | Creates the file for a new client |
+| `/new-campaign name` | Starts a project for that client |
+
+## If you get stuck
+Paste the error into Claude and ask what it means. Do not delete or move files in the folder unless you are sure.
+
+**Next file to read:** `README.md`, it explains how everything is organized.
+=== END FILE ===
+
+=== FILE: README.md ===
+# ICM Kit. Intelligent Context Management for Claude Code
+
+This kit is a folder system designed to work with **Claude Code** in a structured, efficient and scalable way. It works as an &quot;operating system&quot; for your business inside the editor.
+
+---
+
+## What is ICM?
+
+**ICM (Intelligent Context Management)** is a way to organize the context Claude receives in every session. Instead of explaining everything from scratch each time, the system loads the right files for the task at hand.
+
+There are four layers:
+- **L0**: `CLAUDE.md` (the main router, always loaded)
+- **L1**: `CONTEXT.md` (the load table: what to load and when)
+- **L2**: `stages/` and `clients/` (one workspace per project)
+- **L3**: `shared/references/` (the persistent knowledge base)
+
+---
+
+## Install in 3 steps
+
+### 1. Copy the folder
+```bash
+cp -r icm-kit/ ~/your-business/
+cd ~/your-business/
+```
+
+### 2. Fill in the reference files
+These are the only files you must complete before you start:
+
+| File | What to fill in |
+|---|---|
+| `shared/references/identity.md` | Name, description, founders, value proposition |
+| `shared/references/voice.md` | Tone, forbidden phrases, phrases that DO sound like your brand |
+| `shared/references/pricing.md` | Your products or services, prices, sales rules |
+
+Everything else (`CLAUDE.md`, `CONTEXT.md`, `stages/`) is ready to use.
+
+### 3. Open Claude Code inside the folder
+```bash
+claude   # inside ~/your-business/
+```
+Claude reads `CLAUDE.md` automatically when the session starts.
+
+---
+
+## Daily use
+
+### Main commands
+
+| What you want | How to say it |
+|---|---|
+| Daily brief | `brief` (no slash) or `/brief` |
+| Weekly review | `review` (no slash) or `/review` |
+| New client | `/new-client client-name` |
+| Produce a project for a client | `/new-campaign client-name` |
+| Audit the tone of a text | `/brand-check [paste the text or a file path]` |
+
+### The project flow (pipeline)
+```
+01-research → 02-strategy → 03-direction → 04-production → 05-delivery
+```
+Every stage has its own `CONTEXT.md` with instructions: what to do, which tools to use and what output is expected. Claude follows each stage&#x27;s contract without you having to explain it.
+
+**The pipeline is agnostic. It adapts to any project-based business.** A services business maps like this:
+
+| Generic stage | In a services business |
+|---|---|
+| 01-research | Survey the client, the site, the need |
+| 02-strategy | Define the approach and scope |
+| 03-direction | Design, direction, visual proposal |
+| 04-production | Doing the work |
+| 05-delivery | Delivery, close, follow-up |
+
+Rename the stages if your field calls them something else. The system works the same.
+
+---
+
+## Folder structure
+
+```
+your-business/
+├── START-HERE.md                  ← install from zero (READ FIRST)
+├── CLAUDE.md                      ← L0 router (always loaded by Claude Code)
+├── CONTEXT.md                     ← L1 load table
+├── shared/
+│   └── references/
+│       ├── identity.md            ← ★ FILL IN: your business identity
+│       ├── voice.md               ← ★ FILL IN: tone and phrases
+│       ├── pricing.md             ← ★ FILL IN: prices and sales rules
+│       └── tool-routing.md        ← which tool for which intent
+├── stages/                        ← generic pipeline (reused per project)
+│   ├── 01-research/
+│   ├── 02-strategy/
+│   ├── 03-direction/
+│   ├── 04-production/
+│   └── 05-delivery/
+├── clients/
+│   └── _template/                 ← copy and rename for every new client
+│       ├── CONTEXT.md
+│       ├── brief.md
+│       └── references/brand.md
+└── memory/
+    ├── learnings.md               ← cross-project insights
+    ├── clients/                   ← one log per client (amount, lessons, status)
+    └── prompts/
+        └── prompts-that-worked.md
+```
+
+---
+
+## Model strategy
+
+| Phase | Recommended model | When |
+|---|---|---|
+| Planning | Your strongest model, max effort | Project architecture, complex decisions |
+| Execution | The fast model, high effort | Copy, prompts, editing files |
+| Quick scan | Fast mode | Reviewing a brief, scanning references |
+| Multimodal | Your strongest model | Analyzing client PDFs |
+| Escalation | Your strongest model, extra effort | A hard blocker |
+
+---
+
+## FAQ
+
+**Does it work for any field?**
+Yes. The system is agnostic. You only fill in `identity.md`, `voice.md` and `pricing.md` with your business.
+
+**What do I need to install?**
+Only Claude Code and a paid Claude account.
+
+**Do I have to use all the stages?**
+No. If your business does not have a five-phase pipeline, delete the stages you do not use and rename the ones you do.
+
+**Can I rename folders?**
+Yes, but if you change names you must update the references in `CLAUDE.md` and `CONTEXT.md`.
+=== END FILE ===
+
+=== FILE: CLAUDE.md ===
+# Workspace Router (L0)
+
+&gt; ICM Layer 0. Routes any task to the right workspace and stage. Always loaded.
+
+## Job routing
+| Intent | Where to go |
+|---|---|
+| Daily brief | `brief` / `/brief` |
+| Weekly review | `review` / `/review` |
+| New client (per project) | `/new-client &lt;name&gt;` → copy `clients/_template/` to `clients/&lt;name&gt;/` |
+| Produce a project for a client | `/new-campaign &lt;client&gt;` → start in `stages/01-research/` |
+| Audit tone / validate a delivery | `/brand-check &lt;file or text&gt;` |
+| Work inside the active stage | `stages/NN-{name}/CONTEXT.md` |
+| Work with an existing client | `clients/{client}/CONTEXT.md` |
+| Capture a learning / update the OS | `memory/learnings.md` |
+
+## Mandatory reads (session start)
+- `CONTEXT.md`, the L1 load table
+
+## What NOT to load (session start)
+- `archive/**`, legacy documents
+- `stages/**/output/`, Layer 4, load only inside the active stage
+- `clients/*/stages/**/output/`, same
+- `node_modules`, build folders, `.agents/`
+
+## Conventions (non-negotiable)
+- **Pricing floor:** see `shared/references/pricing.md`. Always a written agreement first.
+- **Voice:** `shared/references/voice.md` is the single source of truth.
+- **Tool routing:** `shared/references/tool-routing.md` decides which tool to use.
+
+## Stage progression (the pipeline)
+`01-research` → `02-strategy` → `03-direction` → `04-production` → `05-delivery`
+
+Every stage has its own `CONTEXT.md` with Input → Process → Output → Completion.
+
+## Memory (persists between sessions)
+- `memory/clients/{client}.md`, final log per client (amount, learnings, status)
+- `memory/learnings.md`, cross-project insights
+- `memory/prompts/prompts-that-worked.md`, library of prompts that produced exceptional results
+
+## Triggers (single word)
+| Trigger | Action |
+|---|---|
+| `brief` | Status + 3 priorities for today + 1 strategic question |
+| `review` | Weekly recap + blockers + learnings + next 3 priorities |
+
+## Model strategy
+
+| Phase | Model | Effort | When |
+|---|---|---|---|
+| 🧠 PLANNING (plan mode) | Your strongest model | Max | Project architecture, complex decisions |
+| ⚡ EXECUTION | The fast model | High (default) | Copy, prompts, editing files |
+| 🔍 QUICK SCAN | Fast mode | Low | Review a brief, scan references |
+| 📄 MULTIMODAL | Your strongest model | High | Analyze client PDFs |
+| ⬆️ ESCALATION | Your strongest model | Extra | A hard blocker → solve it, then go back to the fast model |
+
+### Protocol (mandatory): always state the model
+
+**At the start of every answer**, show a visible block with the phase and the model it calls for. Announce it again whenever the phase changes:
+
+```
+🧠 PLANNING  → strongest model · Effort Max    (plan mode)
+⚡ EXECUTION → fast model · Effort High         (implementing)
+🔍 SCAN      → fast mode · Effort Low
+⬆️ ESCALATE  → strongest model · Effort Extra
+```
+
+Rules:
+- **Plan mode = strongest model** (plan, decide architecture). **Execution = fast model** (write, edit, produce). Announce the switch when you move from planning to executing.
+- The agent **does not switch models on its own**: it says which one applies and **the user changes it in the app&#x27;s selector**. The block is the reminder.
+- If for any reason you are not on the recommended model, say so anyway (&quot;I&#x27;m on the fast model, this would be better on the strongest one&quot;) so the user can decide.
+=== END FILE ===
+
+=== FILE: CONTEXT.md ===
+# Workspace. Load Table (L1)
+
+&gt; ICM Layer 1. Declares what gets loaded, when and why, for the active session.
+
+## What to load
+| Resource | When | Why |
+|---|---|---|
+| `shared/references/identity.md` | Always (session start) | The business&#x27;s voice and positioning |
+| `shared/references/voice.md` | Any output with text | Tone filter and forbidden phrases |
+| `shared/references/pricing.md` | Commercial conversations / proposals | Floor and non-negotiable structure |
+| `shared/references/tool-routing.md` | Deciding which tool to use | Intent → tool mapping |
+| `clients/{client}/CONTEXT.md` | Client with an active project | Brief, status, deliverables |
+| `clients/{client}/brief.md` | Starting stage 01 with a client | The original brief |
+| `memory/clients/{client}.md` | Client with previous history | Lessons from earlier projects |
+| `stages/NN-{name}/CONTEXT.md` | Entering an active stage | The stage contract |
+
+## What NOT to load
+- Several `stages/` at once. Load only the active stage.
+- Several `clients/{client}/` at once. Load only the active client.
+- `stages/**/output/` unless you are reviewing a specific output.
+
+## Stage progression
+`01-research` → `02-strategy` → `03-direction` → `04-production` → `05-delivery`
+
+Every stage `CONTEXT.md` declares its own Input / Process / Output. Do not skip stages.
+
+## Subagents (configure in `.claude/agents/`)
+You can create subagents for repeated tasks. Useful examples:
+- `brand-guardian`, catches off-tone phrases before delivery
+- `deliverable-reviewer`, final review before it reaches the client
+
+See the Claude Code docs: `claude --help` or `/help`.
+=== END FILE ===
+
+=== FILE: stages/01-research/CONTEXT.md ===
+# Stage 01. Research
+
+&gt; Estimated time: 2 to 4 h
+
+## Input
+| Source | What | Why |
+|---|---|---|
+| `clients/{client}/brief.md` | The client&#x27;s initial brief | Project goal, budget, deadline |
+| `shared/references/identity.md` | Business identity | Keep voice and positioning |
+| `shared/references/voice.md` | Tone + forbidden phrases | Filter language before any output |
+
+## Process
+1. Read the client brief (or ask the key questions if it is incomplete)
+2. Analyze the client&#x27;s digital presence: site, social, current communication
+3. Identify 3 to 5 relevant references: the ones the client mentioned plus the ones that fit the industry
+4. Analyze 1 or 2 direct competitors: what they do, what they lack
+5. Identify 1 or 2 aspirational references outside the industry
+6. Synthesize: 1 paragraph of context plus a list of key findings
+
+## Suggested tools
+- `WebFetch` to analyze the client&#x27;s and competitors&#x27; sites and social
+- The `Explore` subagent if references are scattered across the project
+
+## Output
+Write to `output/research.md`:
+```markdown
+# Research. {client}
+**Date:** {YYYY-MM-DD}
+
+## Company / brand context
+{1 paragraph}
+
+## What they are doing well
+- {3-5 bullets}
+
+## What they lack / the opportunity
+- {3-5 bullets}
+
+## Differential opportunity
+{1 paragraph: what nobody in their industry is using}
+
+## Relevant references (3-5)
+- {URL or description + why it applies}
+
+## Strategic question for the client
+{1 question that forces the client to clarify direction}
+```
+
+## Completion
+- Wait for a human review of `output/research.md`.
+- Next stage: `stages/02-strategy/`.
+=== END FILE ===
+
+=== FILE: stages/02-strategy/CONTEXT.md ===
+# Stage 02. Strategy
+
+&gt; Estimated time: 1 to 2 h
+
+## Input
+| Source | What | Why |
+|---|---|---|
+| `stages/01-research/output/research.md` | Stage 1 output | Context and opportunity |
+| `shared/references/identity.md` | Business identity | The concept must align with your brand |
+| `shared/references/voice.md` | Tone | Filters concept options |
+| `clients/{client}/brief.md` | Original brief | The client&#x27;s business goal |
+
+## Process
+1. Define the **core concept**: ONE idea, one sentence maximum. If it needs more, it is not strong enough.
+2. Define the **audience**: real psychographics, not demographics. What they feel, fear, want.
+3. Define the **dominant emotion / result**: specific, not generic.
+4. Define **formats and scope**: which pieces / deliverables we will produce and why.
+5. Define a **measurable business goal**: the concrete action we want from the end customer.
+
+## Output
+Write to `output/strategy.md` (one page maximum; if it does not fit, it is overcomplicated):
+```markdown
+# Strategy. {client}
+
+## Core concept
+{1 sentence. One idea that runs through everything.}
+
+## Audience
+{Psychographics: desires, fears, contradictions.}
+
+## Result / dominant emotion
+{1 specific, measurable result, or 1 specific emotion.}
+
+## Deliverables to produce
+- {Deliverable 1: description, format, why}
+- {Deliverable 2: ...}
+
+## Measurable business goal
+{Which metric / action we want to move.}
+
+## Anti-goal
+{What we do NOT want to happen.}
+```
+
+## Completion
+- Human review. If there is no agreement on the concept, go back to Stage 1.
+- **Rule:** concept first. Always. If the idea is weak, do not move forward.
+- Next stage: `stages/03-direction/`.
+=== END FILE ===
+
+=== FILE: stages/03-direction/CONTEXT.md ===
+# Stage 03. Direction
+
+&gt; Estimated time: 2 to 3 h
+
+## Input
+| Source | What | Why |
+|---|---|---|
+| `stages/02-strategy/output/strategy.md` | Signed-off strategy | Concept and deliverables defined |
+| `stages/01-research/output/research.md` | The client&#x27;s references | Inspiration bank |
+| `shared/references/identity.md` | Aesthetics and identity | Coherence with the brand |
+| `clients/{client}/references/brand.md` | The client&#x27;s brand | Respect the client&#x27;s identity |
+
+## Process
+1. Translate the strategy into **concrete direction**: how does each deliverable look, sound or feel?
+2. Define specific references: style, palette, visual / verbal tone per piece
+3. Write a **brief per deliverable**: concrete instructions for production
+4. If there are AI assets (images, video, copy): write the prompts or briefs in this step
+5. Validate internally before moving to production
+
+## Output
+Write to `output/`:
+- `output/direction.md`, direction decisions (style, tone, palette, references per piece)
+- `output/briefs/`, one brief per deliverable (`.md` or `.json` depending on the tool)
+
+## Direction rules
+- One direction per deliverable. If there are two possible options, pick one.
+- Be specific: not &quot;modern&quot;, but &quot;sans-serif type, lots of white space, no icons&quot;.
+- The brief must be executable without asking anything else.
+
+## Completion
+- Human review of `output/direction.md`.
+- Next stage: `stages/04-production/`.
+=== END FILE ===
+
+=== FILE: stages/04-production/CONTEXT.md ===
+# Stage 04. Production
+
+&gt; Estimated time: varies with the number of pieces
+
+## Input
+| Source | What | Why |
+|---|---|---|
+| `stages/03-direction/output/briefs/` | Direction briefs | The base for execution |
+| `shared/references/tool-routing.md` | Tool routing | Decide which tool to use for each piece |
+| `clients/{client}/references/brand.md` | The client&#x27;s brand | Visual / verbal consistency |
+
+## Process
+1. Take each direction brief
+2. Execute with the right tool (per `tool-routing.md`)
+3. **Apply the quality criteria** before selecting (see below)
+4. If no variation passes the criteria → adjust the brief, do not generate more variations of the same one
+5. Select the best result
+6. Post-process if needed
+
+## Quality criteria (selection)
+✅ Looks / sounds real and specific to the client
+✅ Meets the goal defined in `strategy.md`
+✅ Respects the direction in `direction.md`
+✅ Does not look generic or like a template
+❌ Discard if: it could belong to any company, it sounds like obvious AI, it does not solve the goal
+
+## Output
+Write to `output/`:
+- `output/selected/`, the selected pieces with descriptive names
+- `output/jobs.md`, a log of what was generated / executed, with links or references
+
+## Completion
+- Every selected piece passes the quality criteria
+- Next stage: `stages/05-delivery/`
+=== END FILE ===
+
+=== FILE: stages/05-delivery/CONTEXT.md ===
+# Stage 05. Delivery
+
+&gt; Estimated time: 1 to 2 h
+
+## Input
+| Source | What | Why |
+|---|---|---|
+| `stages/04-production/output/selected/` | Final pieces | The material to deliver |
+| `stages/02-strategy/output/strategy.md` | Concept + goal | Base for copy and context |
+| `shared/references/voice.md` | Tone + forbidden phrases | Filter the copy before delivery |
+| `clients/{client}/brief.md` | Original brief | Confirm the goals were met |
+
+## Process
+1. **Write copy** for each piece if it applies (3 options per piece maximum)
+   - Check against the forbidden phrases in `voice.md` before including it
+2. **Write a usage / publishing guide**: order, platform, context of use
+3. **Write 1 paragraph of creative context**: the idea behind the project (so the client understands what they received and why)
+4. **Package the delivery**: assets + copy + guide in one organized folder
+5. **Final review** before sending: tone, completeness, compliance with the brief
+
+## Output
+Write to `output/` (or to `clients/{client}/deliverables/{YYYY-MM-DD}/`):
+- `assets/`, final pieces in a ready-to-use format
+- `copy.md`, copy per piece (if it applies)
+- `publishing-guide.md`, usage / publishing instructions
+- `creative-context.md`, 1 paragraph on the idea (for the client)
+
+## Completion
+- Pass the tone review before sending
+- Send the delivery to the client
+- Update `memory/clients/{client}.md`: amount billed, 1 learning, status
+- If there were exceptional outputs: add them to `memory/prompts/prompts-that-worked.md`
+=== END FILE ===
+
+=== FILE: shared/references/identity.md ===
+# {{STUDIO_NAME}}. Identity (single source of truth)
+
+&gt; ★ FILL IN this file before using the system.
+&gt; Load when: any stage that uses brand voice, identity or positioning.
+
+---
+
+## What {{STUDIO_NAME}} is
+&lt;!-- One sentence that captures exactly what you do and for whom. --&gt;
+&lt;!-- Example: &quot;A strategic design studio that turns mid-sized brands into references in their industry.&quot; --&gt;
+
+{{BUSINESS_DESCRIPTION}}
+
+## Founders / team
+&lt;!-- Who they are, the role of each one, what you specifically bring. --&gt;
+
+- **{{NAME_1}}**, {{ROLE}}, {{WHAT_THEY_DO}}
+- **{{NAME_2}}**, {{ROLE}}, {{WHAT_THEY_DO}}
+
+## Public anchors
+&lt;!-- Where you exist online and how you present yourself. --&gt;
+
+- Site / main channel: `{{URL_OR_HANDLE}}`
+- Tagline (internal): `{{INTERNAL_TAGLINE}}`
+- Tagline (external): `{{EXTERNAL_TAGLINE}}`
+- One-liner: `{{ONE_LINER}}`
+- Exact positioning: `{{POSITIONING}}`
+
+## Markets
+&lt;!-- Geography and segment where you operate. --&gt;
+
+{{MARKETS}}
+
+## Ideal client
+&lt;!-- Who IS the right client: industry, size, mindset. --&gt;
+
+{{IDEAL_CLIENT_DESCRIPTION}}
+
+## NOT for {{STUDIO_NAME}}
+&lt;!-- Who is NOT your client. This avoids wasting time on the wrong leads. --&gt;
+
+- {{EXCLUSION_1}}
+- {{EXCLUSION_2}}
+- {{EXCLUSION_3}}
+
+## Philosophy / non-negotiable values
+&lt;!-- The principles that guide every creative or operational decision. --&gt;
+
+- {{VALUE_1}}
+- {{VALUE_2}}
+- {{VALUE_3}}
+
+## Aesthetics / working style (if it applies)
+&lt;!-- Only if your business has a particular visual aesthetic or delivery style. --&gt;
+
+{{AESTHETICS}}
+
+## Commercial insight
+&lt;!-- The central idea for which clients pay YOU and not someone else. --&gt;
+&lt;!-- Example: &quot;The client does not pay for hours → they pay for result + criteria + direction.&quot; --&gt;
+
+{{COMMERCIAL_INSIGHT}}
+
+## Output priorities
+&lt;!-- In order: what you prioritize in every delivery. --&gt;
+
+1. {{PRIORITY_1}}
+2. {{PRIORITY_2}}
+3. {{PRIORITY_3}}
+=== END FILE ===
+
+=== FILE: shared/references/voice.md ===
+# {{STUDIO_NAME}}. Voice (single source of truth)
+
+&gt; ★ FILL IN this file before using the system.
+&gt; Load when: any output with text aimed at the client or the public.
+
+---
+
+## Tone
+&lt;!-- Describe the tone in 3 to 5 adjectives. Be specific: not &quot;professional&quot;, but what kind of professional. --&gt;
+&lt;!-- Example: &quot;Direct · warm · no fluff. Talks like someone who knows a lot but does not show off.&quot; --&gt;
+
+{{TONE}}
+
+## Forbidden phrases. NEVER use
+&lt;!-- The words and phrases that must never appear in your brand&#x27;s communication. --&gt;
+&lt;!-- If one shows up in a draft → rewrite before delivering. --&gt;
+
+- {{FORBIDDEN_PHRASE_1}}
+- {{FORBIDDEN_PHRASE_2}}
+- {{FORBIDDEN_PHRASE_3}}
+- Anything that sounds like a Canva template or generic AI
+- &quot;As experts in...&quot;
+- &quot;We are passionate about...&quot;
+
+## Phrases that DO sound like {{STUDIO_NAME}}
+&lt;!-- Concrete examples of how your brand DOES sound. --&gt;
+
+- &quot;{{YES_PHRASE_1}}&quot;
+- &quot;{{YES_PHRASE_2}}&quot;
+- &quot;{{YES_PHRASE_3}}&quot;
+
+## Output rules
+&lt;!-- What to avoid in every output, whatever the format. --&gt;
+
+- No generic outputs
+- No empty corporate jargon
+- No promises you cannot measure
+- No obvious AI filler (&quot;Understood&quot;, &quot;Of course&quot;, &quot;Sure!&quot;)
+- No endless lists when a paragraph works better
+
+## Rules for communicating with clients
+&lt;!-- How you talk to clients: email, proposal, follow-up. --&gt;
+
+- {{COMMUNICATION_RULE_1}}
+- {{COMMUNICATION_RULE_2}}
+- {{COMMUNICATION_RULE_3}}
+
+## Language / bilingual
+&lt;!-- If you work in more than one language, say so. --&gt;
+
+- **Internal documents / client communication / copy:** {{OPS_LANGUAGE}}
+- **AI prompts (if you generate content):** English. Always.
+
+## Self-audit
+Before delivering any output with text: check it against &quot;Forbidden phrases&quot;.
+If one appears → rewrite. Do not patch, rewrite.
+=== END FILE ===
+
+=== FILE: shared/references/pricing.md ===
+# {{STUDIO_NAME}}. Pricing (single source of truth)
+
+&gt; ★ FILL IN this file before using the system.
+&gt; Load when: commercial conversations, proposals, quotes.
+
+---
+
+## Services / products
+&lt;!-- One line per offer: what it is, what it includes, what it does not include. --&gt;
+
+| Offer | Includes | Does not include | Price |
+|---|---|---|---|
+| {{OFFER_1}} | {{INCLUDES_1}} | {{EXCLUDES_1}} | {{PRICE_1}} |
+| {{OFFER_2}} | {{INCLUDES_2}} | {{EXCLUDES_2}} | {{PRICE_2}} |
+| {{OFFER_3}} | {{INCLUDES_3}} | {{EXCLUDES_3}} | {{PRICE_3}} |
+
+## Floor (non-negotiable)
+&lt;!-- The minimum you accept for a project. Below this, say no. --&gt;
+
+{{FLOOR}}
+
+## Payment structure
+- {{PERCENT}}% upfront, the rest on delivery
+- Always a written agreement before starting
+- Currency and invoicing: {{CURRENCY_AND_INVOICING}}
+
+## Sales rules
+- Never quote in the first conversation. Understand first, quote after.
+- Every quote names the deliverables, the deadline and what is out of scope.
+- Extra rounds of changes: {{CHANGE_ROUNDS_POLICY}}
+=== END FILE ===
+
+=== FILE: shared/references/tool-routing.md ===
+# {{STUDIO_NAME}}. Tool Routing Table
+
+&gt; Load when: you have to decide which tool / skill / subagent to use for an intent.
+&gt; This file is yours: change it to match the tools you actually use.
+
+---
+
+## Quick decision by intent
+
+| Intent | Tool / action | When NOT |
+|---|---|---|
+| Research a client / competitor | `WebFetch` + web search | If you already have the info |
+| Audit the tone of a text | Subagent `brand-guardian` (if you set it up) | Internal drafts only |
+| Review before client delivery | Subagent `deliverable-reviewer` | Unpolished drafts |
+| Automate a recurring workflow | Your automation tool | One-off manual tasks |
+| Generate image / video (if it applies) | Your preferred generation tool | |
+| Build / update a website | Your preferred web tool | |
+| Multi-file research | Subagent `Explore` (built into Claude Code) | A single-file lookup |
+
+## Decision by pipeline stage
+
+| Stage | Main action | Output goes to |
+|---|---|---|
+| 01-research | WebFetch, research, benchmarking | `stages/01-research/output/` |
+| 02-strategy | Working session with Claude, concept development | `stages/02-strategy/output/` |
+| 03-direction | Define direction, build prompts / briefs | `stages/03-direction/output/` |
+| 04-production | Execution with external tools | `stages/04-production/output/` |
+| 05-delivery | Copy, packaging, final review | `stages/05-delivery/output/` |
+
+## Routing rules
+1. **One tool per intent.** If two seem to apply, pick the more specific one.
+2. **Subagents do NOT execute production.** They only audit / review / plan.
+3. **Before any final delivery:** go through a tone and completeness review.
+4. **If you are torn between tools:** ask Claude directly, &quot;which tool would you use for X?&quot;.
+
+## My tools (fill in)
+&lt;!-- List the tools you really use in your business. --&gt;
+
+| Tool | What for |
+|---|---|
+| {{TOOL_1}} | {{USE_1}} |
+| {{TOOL_2}} | {{USE_2}} |
+| {{TOOL_3}} | {{USE_3}} |
+=== END FILE ===
+
+=== FILE: clients/_template/CONTEXT.md ===
+# Client. {{CLIENT_NAME}}
+
+&gt; Load when: working on anything for this client. Copy `clients/_template/` to `clients/{{client-name}}/` and fill this in.
+
+## Status
+- **Stage:** {{01-research | 02-strategy | 03-direction | 04-production | 05-delivery}}
+- **Started:** {{YYYY-MM-DD}}
+- **Deadline:** {{YYYY-MM-DD}}
+- **Owner:** {{WHO}}
+
+## What this project is
+&lt;!-- One paragraph. Goal, scope, what success looks like. --&gt;
+
+{{SUMMARY}}
+
+## Files for this client
+| File | What |
+|---|---|
+| `brief.md` | The original brief. Read at stage 01. |
+| `references/brand.md` | The client&#x27;s brand: tone, palette, approved and rejected references. |
+| `deliverables/{YYYY-MM-DD}/` | What was delivered, by date. |
+
+## Deliverables agreed
+- {{DELIVERABLE_1}}
+- {{DELIVERABLE_2}}
+
+## Open questions
+- {{QUESTION_1}}
+
+## Notes
+&lt;!-- Anything Claude should know before touching this client&#x27;s work. --&gt;
+-
+=== END FILE ===
+
+=== FILE: clients/_template/brief.md ===
+# Brief. {{CLIENT_NAME}}
+
+&gt; Date: {{DATE}}
+
+## Client data
+- **Company / brand:**
+- **Field / industry:**
+- **Market / country:**
+- **Web / social:**
+- **Contact / decision-maker:**
+
+## Project goal
+&gt; One sentence. The business result the client expects.
+
+## What they want to communicate / solve / improve
+-
+
+## Audience (in the client&#x27;s words)
+-
+
+## Expected deliverables
+- Deliverable 1:
+- Deliverable 2:
+- Others:
+
+## Deadline
+&gt; If there is real urgency, say so here.
+
+## References the client gave
+-
+
+## Restrictions / no-go
+&gt; Things the client explicitly does NOT want.
+-
+
+## Agreed budget
+- Total: $
+- Product: {{PRODUCT}}
+- Payment: {{PERCENT}}% upfront $ (date) + the rest on delivery $ (date)
+
+## Internal notes (do not share with the client)
+- Lead qualification (real signals / red flags):
+- Why this client is right for my business:
+- Risks detected:
+=== END FILE ===
+
+=== FILE: clients/_template/references/brand.md ===
+# Brand Reference. {{CLIENT_NAME}}
+
+&gt; Fill in with the client&#x27;s brand information. Source: brand manual, site, brief or conversation.
+
+## Identity
+- **Brand name:**
+- **Tagline / slogan:**
+- **One-liner (how they describe themselves):**
+
+## The client&#x27;s tone of voice
+&lt;!-- How the client&#x27;s brand speaks. This is INDEPENDENT of how your business speaks. --&gt;
+-
+
+## Color palette
+- Primary:
+- Secondary:
+- Neutral:
+
+## Typefaces (if known)
+-
+
+## Visual aesthetics
+&lt;!-- The style of photos, videos, illustrations the brand uses. --&gt;
+-
+
+## References the client approved
+&lt;!-- URLs or descriptions of things the client said &quot;I want something like this&quot;. --&gt;
+-
+
+## References the client rejected
+&lt;!-- Things they explicitly do not want. --&gt;
+-
+
+## Additional notes
+-
+=== END FILE ===
+
+=== FILE: memory/README.md ===
+# Memory
+
+What persists between sessions. Claude reads these when the router says so, and updates them at the end of a project.
+
+- `learnings.md`, cross-project insights. Only things you learned by doing.
+- `clients/{client}.md`, one log per client: amount billed, lessons, status.
+- `prompts/prompts-that-worked.md`, every prompt or brief that produced an exceptional result.
+=== END FILE ===
+
+=== FILE: memory/learnings.md ===
+# Learnings. Cross-project
+
+&gt; Insights captured after real projects. Update after every delivery.
+&gt; No theory. Only things you learned by doing.
+
+---
+
+## Operations / sales
+
+_(empty. Fill in after the first project)_
+
+## Production / execution
+
+_(empty)_
+
+## Clients / relationships
+
+_(empty)_
+
+## Tools / workflow
+
+_(empty)_
+
+---
+
+## Format for adding a learning
+
+```
+### [YYYY-MM-DD]. {short title}
+**Context:** what happened
+**Learning:** what changes in how you operate from now on
+**Applies to:** (sales / production / tools / clients)
+```
+=== END FILE ===
+
+=== FILE: memory/prompts/prompts-that-worked.md ===
+# Prompts / briefs that worked
+
+&gt; Save here any prompt, brief or instruction that produced an exceptional result.
+&gt; This is your reproducibility library. What worked once can work again.
+
+---
+
+## Format for adding an entry
+
+```
+### [YYYY-MM-DD]. {descriptive name}
+**Project:** {client or context}
+**Tool / context of use:** {where it was used}
+**Why it worked:** {1-2 sentences}
+
+---PROMPT / BRIEF---
+{exact content}
+---END---
+```
+
+---
+
+_(empty. Fill in with your first exceptional result)_
+=== END FILE ===</pre>
+        </details>
+        <p class="why"><b>Why it works:</b> the files are the prompt. The model does not have to invent a system, only write it down and ask you the questions.</p>
+      </article>
+    </div>
+
+    <div class="group">
+      <span class="label">Way two, the files</span>
+      <p>Prefer a folder? <a href="icm-kit-en.zip" download>Download the kit as a zip</a> (works on the public page). Unzip it, open the folder in Claude Code and type <code>brief</code>. Then read START-HERE.md.</p>
+<pre>icm-kit/
+├── START-HERE.md            install from zero
+├── README.md                how it is organized
+├── CLAUDE.md                the router (L0), always loaded
+├── CONTEXT.md               the load table (L1)
+├── shared/references/       identity · voice · pricing · tool-routing
+├── stages/01-research … 05-delivery/   one contract per stage
+├── clients/_template/       CONTEXT · brief · references/brand
+└── memory/                  learnings · clients · prompts-that-worked</pre>
+    </div>
+    <div class="links"><a href="https://biso.studio" rel="noopener">biso.studio</a><a href="https://www.instagram.com/bistudio.ai/" rel="noopener">@bistudio.ai</a><span>hola@biso.studio</span></div>
+  </section>
+
+  <section id="vault" aria-labelledby="vault-h">
+    <p class="eyebrow">Your second brain</p>
+    <h2 id="vault-h">An Obsidian vault, and a graph of it</h2>
+    <p>Every learning and every rule, as notes that link to each other. This is what feeds our prompts. Three steps.</p>
+    <ol class="stages">
+      <li><span class="n">01</span><span class="name">Install Obsidian</span><span class="h"></span><span class="d">obsidian.md, free. Create a vault, any name. It is just a folder.</span></li>
+      <li><span class="n">02</span><span class="name">Paste the prompt below</span><span class="h"></span><span class="d">Open that folder in Claude Code and paste. It builds the structure, the templates, and writes your first notes from what you tell it.</span></li>
+      <li><span class="n">03</span><span class="name">Open the graph</span><span class="h"></span><span class="d">In Obsidian, click Graph view. Every [[link]] is an edge. Add notes for a month and watch it grow.</span></li>
+    </ol>
+    <div class="group">
+      <article class="prompt" id="p9">
+        <header><h3><span>09</span>The vault builder</h3><button class="copy" type="button" data-target="t9" aria-label="Copy the vault builder prompt">Copy</button></header>
+        <p class="when">Claude Code, inside your vault folder. Works with any agent that can create files.</p>
+<pre id="t9">You are helping me start a second brain in Obsidian. We are inside my vault folder (an empty folder is fine, I will open it in Obsidian afterwards).
+
+1. Create this structure:
+   00-inbox/        quick captures, unsorted
+   10-learnings/    one note per thing I learned by doing
+   20-rules/        the rules I follow (my criteria), one per note
+   30-prompts/      prompts and briefs that worked
+   40-projects/     one folder per project, each with a README.md
+   90-templates/    note templates
+
+2. Write three templates in 90-templates/:
+   learning.md  (Context, Learning, Applies to, Related [[links]])
+   rule.md      (The rule, Why, When it does not apply, Related [[links]])
+   prompt.md    (Tool, What it was for, Why it worked, The prompt, Related [[links]])
+
+3. Write README.md at the root with the conventions: one idea per note, a plain-language title, every note links to at least two others with [[wikilinks]], tags only for status (#draft, #tested, #retired).
+
+4. Interview me, one question at a time: five things I learned this month, three rules I already follow, two prompts that worked. Write each one as its own note using the templates, and link them to each other.
+
+5. If the graphify skill is available in this session, run: /graphify . --obsidian --obsidian-dir ./graph so I get a knowledge graph of the vault with communities. If it is not available, tell me how to install it (pip install graphifyy) and skip this step.
+
+6. Finish with: how many notes you created, and the three notes with the most links.</pre>
+        <p class="why"><b>Why it works:</b> it starts from what you already know, and the links are the point. A note without links is a note you will never find again.</p>
+      </article>
+    </div>
+  </section>
+
+  <section id="start" aria-labelledby="start-h">
+    <p class="eyebrow">Where to start</p>
+    <h2 id="start-h">Three things, all free</h2>
+    <ol class="stages">
+      <li><span class="n">01</span><span class="name">The ICM kit</span><span class="h"></span><span class="d">The folder system we run BISO on. <a href="#icm">Copy-paste or download, above.</a></span></li>
+      <li><span class="n">02</span><span class="name">A vault in Obsidian</span><span class="h"></span><span class="d">Your second brain. <a href="#vault">One prompt builds it, above.</a></span></li>
+      <li><span class="n">03</span><span class="name"><a href="https://ccforeveryone.com/" rel="noopener">ccforeveryone.com</a></span><span class="h"></span><span class="d">Claude Code for Everyone: a free, hands-on course. No coding required.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+        <p>Juan Manuel Real · BISO · biso.studio</p>
+  </footer>
+</div>
+
+<script>
+(function(){
+  function flash(btn, label){
+    btn.textContent = label; btn.setAttribute('data-state','done');
+    setTimeout(function(){ btn.textContent = 'Copy'; btn.removeAttribute('data-state'); }, 1800);
+  }
+  function selectText(el){
+    try { var r = document.createRange(); r.selectNodeContents(el); var s = window.getSelection(); s.removeAllRanges(); s.addRange(r); } catch (e) {}
+  }
+  document.addEventListener('click', function(ev){
+    var btn = ev.target.closest && ev.target.closest('button.copy'); if (!btn) return;
+    var el = document.getElementById(btn.getAttribute('data-target')); if (!el) return;
+    var text = el.innerText;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(function(){ flash(btn, 'Copied'); }, function(){ selectText(el); flash(btn, 'Selected'); });
+    } else { selectText(el); flash(btn, 'Selected'); }
+  });
+})();
+</script>
+</body>
+</html>
